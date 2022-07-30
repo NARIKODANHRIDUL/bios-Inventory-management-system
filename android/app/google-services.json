@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1035373907652",
+    "project_id": "bi0s-inventory-ec27b",
+    "storage_bucket": "bi0s-inventory-ec27b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035373907652:android:8159ec6748fd01263ec391",
+        "android_client_info": {
+          "package_name": "com.example.ims"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035373907652-p9voaefdhilmk8g2srdaoe8n9lgsh9bd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP2gGwbpCku8yGgzop2XqOuoZFj5BG62w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035373907652-p9voaefdhilmk8g2srdaoe8n9lgsh9bd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
