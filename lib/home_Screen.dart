@@ -120,18 +120,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   topRight: Radius.circular(30))),
                           child: Image.asset("images/logo.png"),
                         ),
-                        Container(
+                        SizedBox(
                           width: wid1 * 0.9, //underline // WIDTH OF BOX
-                          padding: const EdgeInsets.only(bottom: 5),
-                          decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                              color: dtxtclr,
-                              width: 0.5, // Underline thickness
-                            )),
-                          ),
+
                           child: Padding(
-                            padding: const EdgeInsets.all(5.0),
+                            padding: const EdgeInsets.only(
+                                left: 5.0, bottom: 5, right: 5, top: 10),
                             child: Text('Admin check',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -151,10 +145,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       // height: 150,
                       padding: const EdgeInsets.all(0),
                       child: Column(children: [
-                        Divider(
-                          indent: 10,
-                        ),
-
                         ///
                         ///
                         ///
@@ -173,10 +163,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           textInputAction: TextInputAction.done,
                           controller: admincontroller,
                           autofocus: true,
-                          maxLength: 10,
+                          // maxLength: 10,
                           decoration: InputDecoration(
-                              // counterText:
-                              //     '',
+                              counterText: '',
                               counterStyle:
                                   TextStyle(color: dtxtclr.withOpacity(0.5)),
                               //to hide "0/2" which came because of the 2 max length
@@ -228,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Navigator.of(context).pop();
 
                                   if (admincontroller.text.isNotEmpty &&
-                                      admincontroller.text == "codered") {
+                                      admincontroller.text == "1234567890") {
                                     Fluttertoast.showToast(
                                         msg: "you are now an ADMIN");
                                     setState(() {
@@ -534,12 +523,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(height: 45),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: SizedBox(
-                                height: 35,
-                                child: Image.asset("images/bioshardware.png")),
-                          ),
                           Row(children: [
                             Image(
                               width: 110,
@@ -697,7 +680,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              Div(),
+              SizedBox(height: 20),
               Div(),
               ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -721,11 +704,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Div(),
-              Div(),
+              SizedBox(height: 10),
               //
               //
               //
               //
+              Padding(
+                padding: const EdgeInsets.only(top: 25.0),
+                child: SizedBox(
+                    height: 35, child: Image.asset("images/bioshardwareb.png")),
+              ),
 
               ///
               ///
