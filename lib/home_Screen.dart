@@ -1,11 +1,12 @@
-// ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:ims/inventory.dart';
+import 'package:ims/log.dart';
+import 'package:ims/my_due.dart';
+import 'package:ims/pendingList.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ims/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'login_screen.dart';
 
@@ -13,44 +14,29 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKEy = GlobalKey<ScaffoldState>();
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
-  final GlobalKey<ScaffoldState> _scaffoldKEy = GlobalKey<ScaffoldState>();
 
-  bool derk = true;
   bool admincheck = false;
+  bool derk = true;
+  Color derkclr = const Color.fromRGBO(10, 10, 10, 1);
+
   Color drwrclr = Colors.white;
   Color dtxtclr = Colors.black;
-  Color derkclr = Color.fromRGBO(10, 10, 10, 1);
-  var derkicon = Icons.brightness_3_outlined;
   var toprighticon = Icons.logout;
+  String heading = "INVENTORY";
+  var derkicon = Icons.brightness_3_outlined;
   late TextEditingController admincontroller;
-  String code = "";
 
-  @override
-  void initState() {
-    super.initState();
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      this.loggedInUser = UserModel.fromMap(value.data());
-      setState(() {});
-    });
-    admincontroller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    admincontroller.dispose();
-    super.dispose();
-  }
-
+  int pageIndex = 0;
+  final PageController _pageController = PageController(
+    initialPage: 0,
+  );
   @override
   Widget build(BuildContext context) {
     final wid = MediaQuery.of(context).size.width;
@@ -58,25 +44,214 @@ class _HomeScreenState extends State<HomeScreen> {
     final wids = (hei / 2) - 10;
     double wid1 = wids - 20;
 
-    if (admincheck == false)
+    if (pageIndex == 0) {
       setState(() {
-        toprighticon = Icons.logout;
+        heading = "INVENTORY";
       });
-    else
+    } else if (pageIndex == 1) {
       setState(() {
-        toprighticon = Icons.add_circle_outline_rounded;
+        heading = "LOG";
       });
+    } else if (pageIndex == 2) {
+      setState(() {
+        heading = "MY DUE";
+      });
+    } else if (pageIndex == 3) {
+      setState(() {
+        heading = "PENDING";
+      });
+    }
 
-    ///
-    ///
-    ///
-    ///
-    ///
-    ///
-    ///
-    ///
-    ///
-    ///
+    Future<void> logout(BuildContext context) async {
+      await FirebaseAuth.instance.signOut();
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const LoginScreen()));
+    }
+
+    Future exitDialog() => showDialog(
+          context: context,
+          builder: (context) => Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // if (_isBannerAdReady == true)
+                //   {
+
+                //   }
+                // else
+                //   {
+                //     Container(
+                //       height: banner.size.height.toDouble(),
+                //       width: banner.size.width.toDouble(),
+                //     )
+                //   },
+                AlertDialog(
+                    titlePadding: const EdgeInsets.only(
+                        top: 0, bottom: 10, right: 0, left: 0),
+                    contentPadding:
+                        const EdgeInsets.only(bottom: 1, left: 10, right: 10),
+                    actionsPadding: const EdgeInsets.only(top: 0, bottom: 1),
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.grey.shade900, width: 2),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    backgroundColor:
+                        drwrclr, // Color.fromRGBO(84, 102, 117, 1),
+                    title: Center(
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 150,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(0),
+                            decoration: const BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(30),
+                                    topRight: Radius.circular(30))),
+                            child: Image.asset("images/logo.png"),
+                          ),
+                          Container(
+                            width: wid1 * 0.8, //underline
+                            padding: const EdgeInsets.only(bottom: 5),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                color: dtxtclr,
+                                width: 0.5, // Underline thickness
+                              )),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text('Logout Confirmation',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: dtxtclr.withOpacity(0.9),
+                                  )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    insetPadding: const EdgeInsets.all(0),
+                    content: Container(
+                      padding: const EdgeInsets.all(0),
+                      child: SizedBox(
+                        width: wid * 0.7, //dialogue box width
+                        // height: 100,
+                        child: Text('Do you want to logout ?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 20,
+                                color: dtxtclr)),
+                      ),
+                    ),
+                    actions: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Row(children: [
+                          Expanded(
+                            flex: 8,
+                            child: SizedBox(
+                              height: 50,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    onPrimary: Colors.grey,
+                                    elevation: 0,
+                                    primary: drwrclr,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    side: const BorderSide(
+                                        color: Colors.black, width: 2),
+                                  ),
+                                  onPressed: () {
+                                    // if (heptic) player.play('pluck.mp3');
+                                    // SystemNavigator.pop();
+
+                                    logout(context);
+                                  },
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(
+                                            'LOGOUT',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              color: dtxtclr,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.logout,
+                                            color: dtxtclr,
+                                            size: 25,
+                                          )
+                                        ]),
+                                  )),
+                            ),
+                          ),
+                          const Divider(
+                            indent: 10,
+                          ),
+                          Expanded(
+                            flex: 8,
+                            child: SizedBox(
+                              height: 50,
+                              child: ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.black),
+                                      foregroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.grey.shade800),
+                                      shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                              // side: BorderSide(
+                                              //     color: Colors.black, width: 0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(30)))),
+                                  onPressed: () {
+                                    // if (heptic) player.play('pluck.mp3');
+                                    Navigator.pop(context, false);
+                                  },
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(
+                                            'CANCEL',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                              color: drwrclr,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.cancel_outlined,
+                                            color: drwrclr,
+                                            size: 25,
+                                          )
+                                        ]),
+                                  )),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ]),
+              ]),
+        );
+
     Future adminbox() => showDialog(
           context: context,
           builder: (context) => Column(
@@ -112,8 +287,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         Container(
                           height: 150,
                           width: double.infinity,
-                          padding: EdgeInsets.all(0),
-                          decoration: BoxDecoration(
+                          padding: const EdgeInsets.all(0),
+                          decoration: const BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(30),
@@ -169,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               counterStyle:
                                   TextStyle(color: dtxtclr.withOpacity(0.5)),
                               //to hide "0/2" which came because of the 2 max length
-                              label: Text(
+                              label: const Text(
                                 'Admin Code',
                                 style: TextStyle(
                                   fontSize: 20,
@@ -261,12 +436,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 )),
                           ),
                         ),
-                        Divider(
+                        const Divider(
                           indent: 10,
                         ),
                         Expanded(
                           flex: 9,
-                          child: Container(
+                          child: SizedBox(
                             height: 50,
                             child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -310,199 +485,9 @@ class _HomeScreenState extends State<HomeScreen> {
         );
 
     ///
-    ///
-    ///
-    ///
-    ///
-    ///
-    ///
-    ///
-    Future exitDialog() => showDialog(
-          context: context,
-          builder: (context) => Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // if (_isBannerAdReady == true)
-                //   {
-
-                //   }
-                // else
-                //   {
-                //     Container(
-                //       height: banner.size.height.toDouble(),
-                //       width: banner.size.width.toDouble(),
-                //     )
-                //   },
-                AlertDialog(
-                    titlePadding: const EdgeInsets.only(
-                        top: 0, bottom: 10, right: 0, left: 0),
-                    contentPadding:
-                        const EdgeInsets.only(bottom: 1, left: 10, right: 10),
-                    actionsPadding: const EdgeInsets.only(top: 0, bottom: 1),
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.grey.shade900, width: 2),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    backgroundColor:
-                        drwrclr, // Color.fromRGBO(84, 102, 117, 1),
-                    title: Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 150,
-                            width: double.infinity,
-                            padding: EdgeInsets.all(0),
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    topRight: Radius.circular(30))),
-                            child: Image.asset("images/logo.png"),
-                          ),
-                          Container(
-                            width: wid1 * 0.8, //underline
-                            padding: const EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                color: dtxtclr,
-                                width: 0.5, // Underline thickness
-                              )),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text('Logout Confirmation',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                    color: dtxtclr.withOpacity(0.9),
-                                  )),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    insetPadding: const EdgeInsets.all(0),
-                    content: Container(
-                      padding: const EdgeInsets.all(0),
-                      child: SizedBox(
-                        width: wid * 0.7, //dialogue box width
-                        // height: 100,
-                        child: Text('Do you want to logout ?',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 20,
-                                color: dtxtclr)),
-                      ),
-                    ),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Row(children: [
-                          Expanded(
-                            flex: 8,
-                            child: SizedBox(
-                              height: 50,
-                              child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    onPrimary: Colors.grey,
-                                    elevation: 0,
-                                    primary: drwrclr,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    side: const BorderSide(
-                                        color: Colors.black, width: 2),
-                                  ),
-                                  onPressed: () {
-                                    // if (heptic) player.play('pluck.mp3');
-                                    // SystemNavigator.pop();
-
-                                    logout(context);
-                                  },
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Text(
-                                            'LOGOUT',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color: dtxtclr,
-                                            ),
-                                          ),
-                                          Icon(
-                                            Icons.logout,
-                                            color: dtxtclr,
-                                            size: 25,
-                                          )
-                                        ]),
-                                  )),
-                            ),
-                          ),
-                          const Divider(
-                            indent: 10,
-                          ),
-                          Expanded(
-                            flex: 8,
-                            child: SizedBox(
-                              height: 50,
-                              child: ElevatedButton(
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.black),
-                                      foregroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              Colors.grey.shade800),
-                                      shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                              // side: BorderSide(
-                                              //     color: Colors.black, width: 0.5),
-                                              borderRadius:
-                                                  BorderRadius.circular(30)))),
-                                  onPressed: () {
-                                    // if (heptic) player.play('pluck.mp3');
-                                    Navigator.pop(context, false);
-                                  },
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Text(
-                                            'CANCEL',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color: drwrclr,
-                                            ),
-                                          ),
-                                          Icon(
-                                            Icons.cancel_outlined,
-                                            color: drwrclr,
-                                            size: 25,
-                                          )
-                                        ]),
-                                  )),
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ]),
-              ]),
-        );
 
     var menu = ClipRRect(
-      borderRadius: BorderRadius.only(
+      borderRadius: const BorderRadius.only(
           topRight: Radius.circular(30), bottomRight: Radius.circular(30)),
       child: SizedBox(
         width: 0.88 * wid,
@@ -512,7 +497,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(children: [
             ListView(padding: EdgeInsets.zero, children: [
               ClipRRect(
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(30),
                     bottomRight: Radius.circular(30)),
                 child: Container(
@@ -522,9 +507,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(height: 45),
+                          const SizedBox(height: 45),
                           Row(children: [
-                            Image(
+                            const Image(
                               width: 110,
                               height: 110,
                               image: AssetImage(
@@ -587,21 +572,28 @@ class _HomeScreenState extends State<HomeScreen> {
               //DrawerHeader(child: Container(color: Colors.red)),
 
               ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
                 child: ListTile(
                   leading: Icon(
                     Icons.space_dashboard_rounded,
                     size: 30,
                     color: dtxtclr,
                   ),
-                  title: Text(
+                  title: const Text(
                     'Inventory',
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 22),
                   ),
-                  subtitle: Text("This all we have"),
+                  subtitle: const Text("This all we have"),
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                    _pageController.animateToPage(0,
+                        duration: const Duration(microseconds: 1000),
+                        curve: Curves.ease);
+                    setState(() {
+                      pageIndex = 0;
+                    });
+                    Navigator.pop(context);
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => HomeScreen()));
                     //
                     // function
                   },
@@ -611,21 +603,27 @@ class _HomeScreenState extends State<HomeScreen> {
               //
               //
               ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
                 child: ListTile(
                   leading: Icon(
                     Icons.receipt_long,
                     size: 30,
                     color: dtxtclr,
                   ),
-                  title: Text(
+                  title: const Text(
                     'Log',
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 22),
                   ),
-                  subtitle: Text("See all the activities"),
+                  subtitle: const Text("See all the activities"),
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                    Navigator.pop(context);
+                    _pageController.animateToPage(1,
+                        duration: const Duration(microseconds: 1000),
+                        curve: Curves.ease);
+                    setState(() {
+                      pageIndex = 1;
+                    });
+
                     //
                     // function
                   },
@@ -635,22 +633,26 @@ class _HomeScreenState extends State<HomeScreen> {
               //
               //
               ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
                 child: ListTile(
                   leading: Icon(
                     Icons.pending_actions_rounded,
                     size: 30,
                     color: dtxtclr,
                   ),
-                  title: Text(
+                  title: const Text(
                     'My Due',
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 22),
                   ),
-                  subtitle: Text("See what all dues you having"),
+                  subtitle: const Text("See what all dues you having"),
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
-                    //
+                    _pageController.animateToPage(2,
+                        duration: const Duration(microseconds: 1000),
+                        curve: Curves.ease);
+                    setState(() {
+                      pageIndex = 2;
+                    });
+                    Navigator.pop(context);
                     // function
                   },
                 ),
@@ -659,42 +661,46 @@ class _HomeScreenState extends State<HomeScreen> {
               //
               //
               ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
                 child: ListTile(
                   leading: Icon(
                     Icons.list_alt_rounded,
                     size: 30,
                     color: dtxtclr,
                   ),
-                  title: Text(
+                  title: const Text(
                     'Pending list',
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 22),
                   ),
-                  subtitle: Text("Who all have due"),
+                  subtitle: const Text("Who all have due"),
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
-                    //
+                    _pageController.animateToPage(3,
+                        duration: const Duration(microseconds: 1000),
+                        curve: Curves.ease);
+                    setState(() {
+                      pageIndex = 3;
+                    });
+                    Navigator.pop(context);
                     // function
                   },
                 ),
               ),
 
-              SizedBox(height: 20),
-              Div(),
+              const SizedBox(height: 20),
+              const Div(),
               ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
                 child: ListTile(
                   leading: Icon(
                     Icons.logout,
                     size: 30,
                     color: dtxtclr,
                   ),
-                  title: Text(
+                  title: const Text(
                     'Logout',
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 22),
                   ),
-                  subtitle: Text("Take cares"),
+                  subtitle: const Text("Take cares"),
                   onTap: () {
                     Navigator.pop(context);
                     exitDialog();
@@ -703,8 +709,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              Div(),
-              SizedBox(height: 10),
+              const Div(),
+              const SizedBox(height: 10),
               //
               //
               //
@@ -725,7 +731,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ///
               ///
 
-              SizedBox(
+              const SizedBox(
                 height: 65,
                 child: ListTile(),
               )
@@ -737,7 +743,7 @@ class _HomeScreenState extends State<HomeScreen> {
               bottom: 5,
               //  left: 0.01 * wid,
               child: ClipRRect(
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                     // bottomLeft: Radius.circular(25),
                     // topLeft: Radius.circular(25),
                     topRight: Radius.circular(25),
@@ -794,19 +800,25 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+
     return Scaffold(
+      backgroundColor: Colors.grey.shade800,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            pageIndex = index;
+          });
+        },
+        children: const [
+          Inventory(),
+          Log(),
+          mydue(),
+          pendingList(),
+        ],
+      ),
       key: _scaffoldKEy,
       drawer: menu,
-
-      ///
-      ///
-      ///
-      ///
-      ///
-      ///
-      ///
-      ///
-      ///
       appBar: AppBar(
         backgroundColor: Colors.grey.shade600,
         leading: Padding(
@@ -820,7 +832,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 adminbox();
               }),
               style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(1), primary: Colors.grey),
+                  padding: const EdgeInsets.all(1), primary: Colors.grey),
               child: Image.asset("images/icon.png", fit: BoxFit.contain),
             ),
           ),
@@ -830,7 +842,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           verticalDirection: VerticalDirection.up,
           children: [
-            Text("INVENTORY",
+            Text(heading,
                 style: GoogleFonts.luckiestGuy(
                   fontSize: 35,
                   color: Colors.black,
@@ -847,13 +859,14 @@ class _HomeScreenState extends State<HomeScreen> {
         // centerTitle: true
         actions: [
           if (admincheck == true)
-            Icon(Icons.admin_panel_settings_rounded, size: 35),
+            const Icon(Icons.admin_panel_settings_rounded, size: 35),
           IconButton(
               onPressed: () {
-                if (admincheck == false)
+                if (admincheck == false) {
                   exitDialog();
-                else
+                } else {
                   Fluttertoast.showToast(msg: "add item");
+                }
               },
               icon: Icon(
                 toprighticon,
@@ -864,128 +877,6 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Item(itemname: "Arduino", n: 10),
-            const Div(),
-            Item(itemname: "Esp32", n: 20),
-            Div(),
-            Item(itemname: "RubberDucky", n: 2),
-            Div(),
-            Item(itemname: "BashBunny", n: 3),
-            Div(),
-            Item(itemname: "Proxmark", n: 2),
-            Div(),
-            Item(itemname: "Wifi pineapple", n: 3),
-            Div(),
-            Item(itemname: "HackRF", n: 5),
-            Div(),
-            Item(itemname: "SDR", n: 6),
-            Div(),
-            Item(itemname: "USB TTL", n: 12),
-            Div(),
-            Item(itemname: "Rasberry Pi", n: 3),
-            Div(),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 150,
-                      child:
-                          Image.asset("images/logo.png", fit: BoxFit.contain),
-                    ),
-                    const Text(
-                      "bi0s inventory",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text("${loggedInUser.firstName} ${loggedInUser.secondName}",
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w500,
-                        )),
-                    Text("${loggedInUser.email}",
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w500,
-                        )),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // the logout function
-  Future<void> logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()));
-  }
-}
-
-class Item extends StatelessWidget {
-  const Item({
-    Key? key,
-    required this.itemname,
-    required this.n,
-  }) : super(key: key);
-
-  final String itemname;
-  final int n;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      // tileColor: Colors.red,
-      title: Text(
-        itemname,
-        style: TextStyle(fontSize: 20),
-      ),
-      subtitle: Text("Available : $n"),
-      trailing: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            onPrimary: Colors.grey,
-            primary: Colors.black,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-          ),
-          child: const Text(
-            "Request",
-            style: TextStyle(color: Colors.white),
-          )),
-    );
-  }
-}
-
-class Div extends StatelessWidget {
-  const Div({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Divider(
-      color: Colors.black,
-      endIndent: 10,
-      indent: 10,
-      height: 5,
-      thickness: 1,
     );
   }
 }

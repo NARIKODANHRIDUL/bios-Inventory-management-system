@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
           minWidth: MediaQuery.of(context).size.width,
           onPressed: () {
-            signIn(emailController.text, passwordController.text);
+            signIn(emailController.text.trim(), passwordController.text.trim());
           },
           child: const Text(
             "Login",
