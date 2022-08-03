@@ -6,8 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ims/login_screen.dart';
 import 'package:ims/user_model.dart';
 
-import 'home_Screen.dart';
-
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
 

@@ -12,7 +12,7 @@ class _LogState extends State<Log> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
-      body: Center(child: Text("Coming Soon !!!")),
+      body: const Center(child: Text("Coming Soon !!!")),
     );
   }
 }

@@ -1,14 +1,9 @@
 // ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ims/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import 'home_screen.dart';
-import 'login_screen.dart';
 
 class Inventory extends StatefulWidget {
   const Inventory({Key? key}) : super(key: key);
@@ -51,11 +46,6 @@ class _InventoryState extends State<Inventory> {
 
   @override
   Widget build(BuildContext context) {
-    final wid = MediaQuery.of(context).size.width;
-    final hei = MediaQuery.of(context).size.height;
-    final wids = (hei / 2) - 10;
-    double wid1 = wids - 20;
-
     if (admincheck == false)
       setState(() {
         toprighticon = Icons.logout;

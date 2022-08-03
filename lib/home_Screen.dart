@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ims/inventory.dart';
 import 'package:ims/log.dart';
 import 'package:ims/my_due.dart';
-import 'package:ims/pendingList.dart';
+import 'package:ims/pending_list.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ims/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -813,7 +813,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: const [
           Inventory(),
           Log(),
-          mydue(),
+          myDue(),
           pendingList(),
         ],
       ),
