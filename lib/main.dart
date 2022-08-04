@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.grey,
       ),
-      home: const HomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }

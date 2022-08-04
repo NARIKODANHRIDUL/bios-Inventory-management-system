@@ -21,28 +21,8 @@ class _InventoryState extends State<Inventory> {
   Color dtxtclr = Colors.black;
 
   var toprighticon = Icons.logout;
-  late TextEditingController admincontroller;
+  // late TextEditingController admincontroller;
   String code = "";
-
-  @override
-  void initState() {
-    super.initState();
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      this.loggedInUser = UserModel.fromMap(value.data());
-      setState(() {});
-    });
-    admincontroller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    admincontroller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

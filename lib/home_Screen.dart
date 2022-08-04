@@ -1,3 +1,6 @@
+// ignore_for_file: file_names
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ims/inventory.dart';
@@ -37,6 +40,27 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController(
     initialPage: 0,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+    admincontroller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    admincontroller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final wid = MediaQuery.of(context).size.width;
