@@ -1,4 +1,6 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_const_constructors
+
+import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool admincheck = false;
   bool derk = true;
   Color derkclr = const Color.fromRGBO(10, 10, 10, 1);
+  double bottomsheetsize = 0.9;
 
   Color drwrclr = Colors.white;
   Color dtxtclr = Colors.black;
@@ -35,11 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String heading = "INVENTORY";
   var derkicon = Icons.brightness_3_outlined;
   late TextEditingController admincontroller;
+  late TextEditingController itemcontroller;
 
   int pageIndex = 0;
-  final PageController _pageController = PageController(
-    initialPage: 0,
-  );
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -53,11 +55,17 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {});
     });
     admincontroller = TextEditingController();
+    itemcontroller = TextEditingController();
+    _pageController = PageController(
+      initialPage: 0,
+    );
   }
 
   @override
   void dispose() {
     admincontroller.dispose();
+    itemcontroller.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -90,6 +98,16 @@ class _HomeScreenState extends State<HomeScreen> {
       await FirebaseAuth.instance.signOut();
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginScreen()));
+    }
+
+    if (admincheck == false) {
+      setState(() {
+        toprighticon = Icons.logout;
+      });
+    } else {
+      setState(() {
+        toprighticon = Icons.add_circle_outline_rounded;
+      });
     }
 
     Future exitDialog() => showDialog(
@@ -416,7 +434,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Navigator.of(context).pop();
 
                                   if (admincontroller.text.isNotEmpty &&
-                                      admincontroller.text == "1234567890") {
+                                      admincontroller.text == "123") {
                                     Fluttertoast.showToast(
                                         msg: "you are now an ADMIN");
                                     setState(() {
@@ -509,6 +527,314 @@ class _HomeScreenState extends State<HomeScreen> {
         );
 
     ///
+
+    // Future addbox() => showDialog(
+    //       context: context,
+    //       builder: (context) => Column(
+    //           crossAxisAlignment: CrossAxisAlignment.center,
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           children: [
+    //             // if (_isBannerAdReady == true)
+    //             //   {
+    //             //   }
+    //             // else
+    //             //   {
+    //             //     Container(
+    //             //       height: banner.size.height.toDouble(),
+    //             //       width: banner.size.width.toDouble(),
+    //             //     )
+    //             //   },
+    //             AlertDialog(
+    //               titlePadding: const EdgeInsets.only(
+    //                   top: 0, bottom: 10, right: 0, left: 0),
+    //               contentPadding:
+    //                   const EdgeInsets.only(bottom: 1, left: 10, right: 10),
+    //               actionsPadding: const EdgeInsets.only(top: 0, bottom: 1),
+    //               shape: RoundedRectangleBorder(
+    //                 side: BorderSide(color: Colors.grey.shade900, width: 2),
+    //                 borderRadius: BorderRadius.circular(30),
+    //               ),
+    //               backgroundColor: drwrclr, // Color.fromRGBO(84, 102, 117, 1),
+    //               title: Center(
+    //                 child: Column(
+    //                   children: [
+    //                     Container(
+    //                       height: 150,
+    //                       width: double.infinity,
+    //                       padding: const EdgeInsets.all(0),
+    //                       decoration: const BoxDecoration(
+    //                           color: Colors.black,
+    //                           borderRadius: BorderRadius.only(
+    //                               topLeft: Radius.circular(30),
+    //                               topRight: Radius.circular(30))),
+    //                       child: Image.asset("images/logo.png"),
+    //                     ),
+    //                     SizedBox(
+    //                       width: wid1 * 0.9, //underline // WIDTH OF BOX
+    //                       child: Padding(
+    //                         padding: const EdgeInsets.only(
+    //                             left: 5.0, bottom: 5, right: 5, top: 10),
+    //                         child: Text('Add an item',
+    //                             textAlign: TextAlign.center,
+    //                             style: TextStyle(
+    //                               fontSize: 25,
+    //                               fontWeight: FontWeight.bold,
+    //                               color: dtxtclr.withOpacity(0.9),
+    //                             )),
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //               insetPadding: const EdgeInsets.all(0),
+    //               content: Padding(
+    //                 padding: const EdgeInsets.only(bottom: 0),
+    //                 child: Container(
+    //                   // height: 150,
+    //                   padding: const EdgeInsets.all(0),
+    //                   child: Column(children: [
+    //                     ///
+    //                     ///
+    //                     ///
+    //                     ///
+    //                     ///
+    //                     TextField(
+    //                       style: TextStyle(
+    //                         color: dtxtclr,
+    //                         fontSize: 2,
+    //                       ),
+    //                       cursorColor: dtxtclr,
+    //                       // keyboardType: TextInputType.number,
+    //                       // inputFormatters: [
+    //                       //   FilteringTextInputFormatter.digitsOnly
+    //                       // ],
+    //                       textInputAction: TextInputAction.done,
+    //                       controller: itemcontroller,
+    //                       autofocus: true,
+    //                       // maxLength: 10,
+    //                       decoration: InputDecoration(
+    //                           counterText: '',
+    //                           counterStyle:
+    //                               TextStyle(color: dtxtclr.withOpacity(0.5)),
+    //                           //to hide "0/2" which came because of the 2 max length
+    //                           label: const Text(
+    //                             'Add item',
+    //                             style: TextStyle(
+    //                               fontSize: 20,
+    //                             ),
+    //                           ),
+    //                           floatingLabelBehavior:
+    //                               FloatingLabelBehavior.always,
+    //                           labelStyle: TextStyle(color: dtxtclr),
+    //                           // border: UnderlineInputBorder(borderSide: BorderSide(width: 2)),
+    //                           enabledBorder: OutlineInputBorder(
+    //                               borderRadius: BorderRadius.circular(20),
+    //                               borderSide: BorderSide(color: dtxtclr)),
+    //                           focusedBorder: OutlineInputBorder(
+    //                               borderRadius: BorderRadius.circular(20),
+    //                               borderSide: BorderSide(color: dtxtclr)),
+    //                           // fillColor: Colors.red,
+    //                           hintText: "Type device name",
+    //                           hintStyle: TextStyle(
+    //                               fontSize: 20,
+    //                               color: dtxtclr.withOpacity(0.5))),
+    //                     ),
+    //                     const SizedBox(
+    //                       height: 10,
+    //                     ),
+    //                     Row(
+    //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                       children: [
+    //                         SizedBox(
+    //                           height: 65,
+    //                           child: ElevatedButton(
+    //                               style: ElevatedButton.styleFrom(
+    //                                 elevation: 0,
+    //                                 primary: dtxtclr,
+    //                                 shape: RoundedRectangleBorder(
+    //                                     borderRadius:
+    //                                         BorderRadius.circular(300)),
+    //                               ),
+    //                               onPressed: () {
+    //                                 Navigator.of(context).pop();
+    //                               },
+    //                               child: Icon(
+    //                                 Icons.horizontal_rule,
+    //                                 color: drwrclr,
+    //                                 size: wid / 15,
+    //                               )),
+    //                         ),
+    //                         SizedBox(
+    //                           width: wid1 * 0.4,
+    //                           child: TextField(
+    //                             style: TextStyle(
+    //                               color: dtxtclr,
+    //                               fontSize: 25,
+    //                             ),
+    //                             cursorColor: dtxtclr,
+    //                             // keyboardType: TextInputType.number,
+    //                             // inputFormatters: [
+    //                             //   FilteringTextInputFormatter.digitsOnly
+    //                             // ],
+    //                             textInputAction: TextInputAction.done,
+    //                             controller: itemcontroller,
+    //                             autofocus: true,
+    //                             // maxLength: 10,
+    //                             decoration: InputDecoration(
+    //                                 counterText: '',
+    //                                 counterStyle: TextStyle(
+    //                                     color: dtxtclr.withOpacity(0.5)),
+    //                                 //to hide "0/2" which came because of the 2 max length
+    //                                 label: const Text(
+    //                                   'Add item',
+    //                                   style: TextStyle(
+    //                                     fontSize: 20,
+    //                                   ),
+    //                                 ),
+    //                                 floatingLabelBehavior:
+    //                                     FloatingLabelBehavior.always,
+    //                                 labelStyle: TextStyle(color: dtxtclr),
+    //                                 // border: UnderlineInputBorder(borderSide: BorderSide(width: 2)),
+    //                                 enabledBorder: OutlineInputBorder(
+    //                                     borderRadius: BorderRadius.circular(20),
+    //                                     borderSide: BorderSide(color: dtxtclr)),
+    //                                 focusedBorder: OutlineInputBorder(
+    //                                     borderRadius: BorderRadius.circular(20),
+    //                                     borderSide: BorderSide(color: dtxtclr)),
+    //                                 // fillColor: Colors.red,
+    //                                 hintText: "Type device name",
+    //                                 hintStyle: TextStyle(
+    //                                     fontSize: 20,
+    //                                     color: dtxtclr.withOpacity(0.5))),
+    //                           ),
+    //                         ),
+    //                         SizedBox(
+    //                           height: 65,
+    //                           child: ElevatedButton(
+    //                               style: ElevatedButton.styleFrom(
+    //                                 elevation: 0,
+    //                                 primary: dtxtclr,
+    //                                 shape: RoundedRectangleBorder(
+    //                                     borderRadius:
+    //                                         BorderRadius.circular(300)),
+    //                               ),
+    //                               onPressed: () {
+    //                                 Navigator.of(context).pop();
+    //                               },
+    //                               child: Icon(
+    //                                 Icons.add,
+    //                                 color: drwrclr,
+    //                                 size: wid / 15,
+    //                               )),
+    //                         ),
+    //                       ],
+    //                     ),
+    //                   ]),
+    //                 ),
+    //               ),
+    //               actions: <Widget>[
+    //                 Padding(
+    //                   padding: const EdgeInsets.only(top: 0),
+    //                   child: Row(children: [
+    //                     Expanded(
+    //                       flex: 8,
+    //                       child: SizedBox(
+    //                         height: 50,
+    //                         child: ElevatedButton(
+    //                             style: ElevatedButton.styleFrom(
+    //                               elevation: 0,
+    //                               onPrimary: Colors.grey,
+    //                               primary: drwrclr,
+    //                               shape: RoundedRectangleBorder(
+    //                                   borderRadius: BorderRadius.circular(50)),
+    //                               side: BorderSide(color: dtxtclr, width: 1.5),
+    //                             ),
+    //                             onPressed: () {
+    //                               // if (heptic) player.play('pluck.mp3');
+    //                               Navigator.of(context).pop();
+    //                               if (itemcontroller.text.isNotEmpty &&
+    //                                   itemcontroller.text == "123") {
+    //                                 Fluttertoast.showToast(
+    //                                     msg: "you are now an ADMIN");
+    //                               } else {
+    //                                 Fluttertoast.showToast(msg: "Wrong code");
+    //                               }
+    //                               // if (boss != 0) boss = 5;
+    //                               // if (controllers.text.length == 1)
+    //                               //   sec = '0' + controllers.text;
+    //                               // mi = min;
+    //                               // se = sec;
+    //                               itemcontroller.clear();
+    //                             },
+    //                             child: FittedBox(
+    //                               fit: BoxFit.scaleDown,
+    //                               child: Row(
+    //                                   mainAxisAlignment:
+    //                                       MainAxisAlignment.spaceAround,
+    //                                   children: [
+    //                                     Text(
+    //                                       'OKAY',
+    //                                       style: TextStyle(
+    //                                           fontSize: wid / 20,
+    //                                           fontWeight: FontWeight.w600,
+    //                                           color: dtxtclr),
+    //                                     ),
+    //                                     Icon(
+    //                                       Icons.check_circle_outline_rounded,
+    //                                       color: dtxtclr,
+    //                                       size: wid / 15,
+    //                                     )
+    //                                   ]),
+    //                             )),
+    //                       ),
+    //                     ),
+    //                     const Divider(
+    //                       indent: 10,
+    //                     ),
+    //                     Expanded(
+    //                       flex: 9,
+    //                       child: SizedBox(
+    //                         height: 50,
+    //                         child: ElevatedButton(
+    //                             style: ElevatedButton.styleFrom(
+    //                               elevation: 0,
+    //                               primary: dtxtclr,
+    //                               shape: RoundedRectangleBorder(
+    //                                   borderRadius: BorderRadius.circular(50)),
+    //                             ),
+    //                             onPressed: () {
+    //                               admincontroller.clear();
+    //                               Navigator.of(context).pop();
+    //                             },
+    //                             child: FittedBox(
+    //                               fit: BoxFit.scaleDown,
+    //                               child: Row(
+    //                                   mainAxisAlignment:
+    //                                       MainAxisAlignment.spaceAround,
+    //                                   children: [
+    //                                     Text(
+    //                                       'CANCEL',
+    //                                       style: TextStyle(
+    //                                         fontSize: wid / 20,
+    //                                         fontWeight: FontWeight.w600,
+    //                                         color: drwrclr,
+    //                                       ),
+    //                                     ),
+    //                                     Icon(
+    //                                       Icons.cancel_outlined,
+    //                                       color: drwrclr,
+    //                                       size: wid / 15,
+    //                                     )
+    //                                   ]),
+    //                             )),
+    //                       ),
+    //                     ),
+    //                   ]),
+    //                 ),
+    //               ],
+    //             ),
+    //           ]),
+    //     );
 
     var menu = ClipRRect(
       borderRadius: const BorderRadius.only(
@@ -889,6 +1215,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (admincheck == false) {
                   exitDialog();
                 } else {
+                  // addbox();
+                  showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(50))),
+                    context: context,
+                    builder: (context) => Builder(builder: (context) {
+                      return addsheet(
+                          bottomsheetsize: bottomsheetsize,
+                          wid1: wid1,
+                          dtxtclr: dtxtclr,
+                          itemcontroller: itemcontroller,
+                          drwrclr: drwrclr,
+                          wid: wid,
+                          admincontroller: admincontroller);
+                    }),
+                  );
                   Fluttertoast.showToast(msg: "add item");
                 }
               },
@@ -900,6 +1245,339 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 5,
           )
         ],
+      ),
+    );
+  }
+}
+
+class addsheet extends StatelessWidget {
+  const addsheet({
+    Key? key,
+    required this.bottomsheetsize,
+    required this.wid1,
+    required this.dtxtclr,
+    required this.itemcontroller,
+    required this.drwrclr,
+    required this.wid,
+    required this.admincontroller,
+  }) : super(key: key);
+
+  final double bottomsheetsize;
+  final double wid1;
+  final Color dtxtclr;
+  final TextEditingController itemcontroller;
+  final Color drwrclr;
+  final double wid;
+  final TextEditingController admincontroller;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: (() => Navigator.of(context).pop()),
+      child: GestureDetector(
+        onTap: () {},
+        child: DraggableScrollableSheet(
+          initialChildSize: bottomsheetsize,
+          minChildSize: 0.2,
+          builder: (_, controller) => Container(
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30))),
+            child: ListView(
+              controller: controller,
+              children: [
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(0),
+                  decoration: const BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30))),
+                  child: Image.asset("images/logo.png"),
+                ),
+                SizedBox(
+                  width: wid1 * 0.9, //underline // WIDTH OF BOX
+
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 5.0, bottom: 5, right: 5, top: 10),
+                    child: Text('Add an item',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.roboto(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: dtxtclr.withOpacity(0.9),
+                        )),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Container(
+                    // height: 150,
+                    padding: const EdgeInsets.all(0),
+                    child: Column(children: [
+                      ///
+                      ///
+                      ///
+                      ///
+                      ///
+                      Container(
+                        height: 55,
+                        child: TextField(
+                          cursorRadius: Radius.circular(50),
+                          onTap: (() {}),
+                          textAlignVertical: TextAlignVertical.bottom,
+                          style: GoogleFonts.roboto(
+                            color: dtxtclr,
+                            fontSize: 20,
+                          ),
+                          cursorColor: dtxtclr,
+
+                          // keyboardType: TextInputType.number,
+                          // inputFormatters: [
+                          //   FilteringTextInputFormatter.digitsOnly
+                          // ],
+                          textInputAction: TextInputAction.done,
+                          controller: itemcontroller,
+                          autofocus: true,
+                          // maxLength: 10,
+                          decoration: InputDecoration(
+                              counterText: '',
+                              counterStyle:
+                                  TextStyle(color: dtxtclr.withOpacity(0.5)),
+                              //to hide "0/2" which came because of the 2 max length
+                              label: const Text(
+                                'Add item',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              labelStyle: TextStyle(color: dtxtclr),
+                              // border: UnderlineInputBorder(borderSide: BorderSide(width: 2)),
+
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(color: dtxtclr)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(color: dtxtclr)),
+                              // fillColor: Colors.red,
+                              hintText: "Type device name",
+                              hintStyle: TextStyle(
+                                  fontSize: 20,
+                                  color: dtxtclr.withOpacity(0.5))),
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            height: 65,
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  primary: dtxtclr,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(300)),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Icon(
+                                  Icons.horizontal_rule,
+                                  color: drwrclr,
+                                  size: wid / 15,
+                                )),
+                          ),
+                          SizedBox(
+                            width: wid1 * 0.57,
+                            height: 55,
+                            child: TextField(
+                              cursorRadius: Radius.circular(50),
+                              textAlignVertical: TextAlignVertical.bottom,
+                              style: TextStyle(
+                                color: dtxtclr,
+                                fontSize: 20,
+                              ),
+                              cursorColor: dtxtclr,
+                              // keyboardType: TextInputType.number,
+                              // inputFormatters: [
+                              //   FilteringTextInputFormatter.digitsOnly
+                              // ],
+                              textInputAction: TextInputAction.done,
+                              controller: itemcontroller,
+                              autofocus: true,
+                              // maxLength: 10,
+                              decoration: InputDecoration(
+                                  counterText: '',
+                                  counterStyle: TextStyle(
+                                      color: dtxtclr.withOpacity(0.5)),
+                                  //to hide "0/2" which came because of the 2 max length
+                                  label: const Text(
+                                    'Amount',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                  labelStyle: TextStyle(color: dtxtclr),
+                                  // border: UnderlineInputBorder(borderSide: BorderSide(width: 2)),
+
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: BorderSide(color: dtxtclr)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: BorderSide(color: dtxtclr)),
+                                  // fillColor: Colors.red,
+                                  hintText: "No. of devices",
+                                  hintStyle: TextStyle(
+                                      fontSize: 20,
+                                      color: dtxtclr.withOpacity(0.5))),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 65,
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  primary: dtxtclr,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(300)),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Icon(
+                                  Icons.add,
+                                  color: drwrclr,
+                                  size: wid / 15,
+                                )),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              width: wid * 0.4,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    onPrimary: Colors.grey,
+                                    primary: drwrclr,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    side:
+                                        BorderSide(color: dtxtclr, width: 1.5),
+                                  ),
+                                  onPressed: () {
+                                    // if (heptic) player.play('pluck.mp3');
+                                    Navigator.of(context).pop();
+
+                                    if (itemcontroller.text.isNotEmpty &&
+                                        itemcontroller.text == "123") {
+                                      Fluttertoast.showToast(
+                                          msg: "you are now an ADMIN");
+                                    } else {
+                                      Fluttertoast.showToast(msg: "Wrong code");
+                                    }
+                                    // if (boss != 0) boss = 5;
+
+                                    // if (controllers.text.length == 1)
+                                    //   sec = '0' + controllers.text;
+
+                                    // mi = min;
+                                    // se = sec;
+
+                                    itemcontroller.clear();
+                                  },
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(
+                                            'OKAY',
+                                            style: TextStyle(
+                                                fontSize: wid / 20,
+                                                fontWeight: FontWeight.w600,
+                                                color: dtxtclr),
+                                          ),
+                                          Icon(
+                                            Icons.check_circle_outline_rounded,
+                                            color: dtxtclr,
+                                            size: wid / 15,
+                                          )
+                                        ]),
+                                  )),
+                            ),
+                            const Divider(
+                              indent: 30,
+                            ),
+                            SizedBox(
+                              height: 50,
+                              width: wid * 0.4,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    primary: dtxtclr,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                  ),
+                                  onPressed: () {
+                                    admincontroller.clear();
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(
+                                            'CANCEL',
+                                            style: TextStyle(
+                                              fontSize: wid / 20,
+                                              fontWeight: FontWeight.w600,
+                                              color: drwrclr,
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.cancel_outlined,
+                                            color: drwrclr,
+                                            size: wid / 15,
+                                          )
+                                        ]),
+                                  )),
+                            ),
+                          ])
+                    ]),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

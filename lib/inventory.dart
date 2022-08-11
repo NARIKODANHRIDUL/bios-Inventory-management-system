@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ims/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,21 +20,11 @@ class _InventoryState extends State<Inventory> {
   Color drwrclr = Colors.white;
   Color dtxtclr = Colors.black;
 
-  var toprighticon = Icons.logout;
   // late TextEditingController admincontroller;
   String code = "";
 
   @override
   Widget build(BuildContext context) {
-    if (admincheck == false)
-      setState(() {
-        toprighticon = Icons.logout;
-      });
-    else
-      setState(() {
-        toprighticon = Icons.add_circle_outline_rounded;
-      });
-
     ///
     ///
     ///
@@ -178,8 +168,8 @@ class Div extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(
-      color: Colors.black,
+    return Divider(
+      color: Colors.grey,
       endIndent: 10,
       indent: 10,
       height: 5,

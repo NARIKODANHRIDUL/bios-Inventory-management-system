@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:flutter/material.dart';
 
 class myDue extends StatefulWidget {
@@ -12,7 +14,7 @@ class _myDueState extends State<myDue> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
-      body: const Center(child: const Text("Coming Soon !!!")),
+      body: const Center(child: Text("Coming Soon !!!")),
     );
   }
 }
