@@ -39,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var derkicon = Icons.brightness_3_outlined;
   late TextEditingController admincontroller;
   late TextEditingController itemcontroller;
+  late TextEditingController amountcontroller;
 
   int pageIndex = 0;
   late PageController _pageController;
@@ -56,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     admincontroller = TextEditingController();
     itemcontroller = TextEditingController();
+    amountcontroller = TextEditingController();
     _pageController = PageController(
       initialPage: 0,
     );
@@ -65,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     admincontroller.dispose();
     itemcontroller.dispose();
+    amountcontroller.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -367,47 +370,50 @@ class _HomeScreenState extends State<HomeScreen> {
                         ///
                         ///
                         ///
-                        TextField(
-                          style: TextStyle(
-                            color: dtxtclr,
-                            fontSize: 25,
-                          ),
-                          cursorColor: dtxtclr,
-                          // keyboardType: TextInputType.number,
-                          // inputFormatters: [
-                          //   FilteringTextInputFormatter.digitsOnly
-                          // ],
-                          textInputAction: TextInputAction.done,
-                          controller: admincontroller,
-                          autofocus: true,
-                          // maxLength: 10,
-                          decoration: InputDecoration(
-                              counterText: '',
-                              counterStyle:
-                                  TextStyle(color: dtxtclr.withOpacity(0.5)),
-                              //to hide "0/2" which came because of the 2 max length
-                              label: const Text(
-                                'Admin Code',
-                                style: TextStyle(
-                                  fontSize: 20,
+                        SizedBox(
+                          height: 57,
+                          child: TextField(
+                            style: TextStyle(
+                              color: dtxtclr,
+                              fontSize: 20,
+                            ),
+                            cursorColor: dtxtclr,
+                            // keyboardType: TextInputType.number,
+                            // inputFormatters: [
+                            //   FilteringTextInputFormatter.digitsOnly
+                            // ],
+                            textInputAction: TextInputAction.done,
+                            controller: admincontroller,
+                            autofocus: true,
+                            // maxLength: 10,
+                            decoration: InputDecoration(
+                                counterText: '',
+                                counterStyle:
+                                    TextStyle(color: dtxtclr.withOpacity(0.5)),
+                                //to hide "0/2" which came because of the 2 max length
+                                label: const Text(
+                                  'Admin Code',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                              labelStyle: TextStyle(color: dtxtclr),
-                              // border: UnderlineInputBorder(borderSide: BorderSide(width: 2)),
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                labelStyle: TextStyle(color: dtxtclr),
+                                // border: UnderlineInputBorder(borderSide: BorderSide(width: 2)),
 
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: dtxtclr)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(color: dtxtclr)),
-                              // fillColor: Colors.red,
-                              hintText: "Admin code",
-                              hintStyle: TextStyle(
-                                  fontSize: 20,
-                                  color: dtxtclr.withOpacity(0.5))),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide(color: dtxtclr)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide(color: dtxtclr)),
+                                // fillColor: Colors.red,
+                                hintText: "Admin code",
+                                hintStyle: TextStyle(
+                                    fontSize: 20,
+                                    color: dtxtclr.withOpacity(0.5))),
+                          ),
                         ),
                       ]),
                     ),
@@ -1217,7 +1223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else {
                   // addbox();
                   showModalBottomSheet(
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: Colors.white,
                     isScrollControlled: true,
                     shape: RoundedRectangleBorder(
                         borderRadius:
@@ -1229,6 +1235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           wid1: wid1,
                           dtxtclr: dtxtclr,
                           itemcontroller: itemcontroller,
+                          amountcontroller: amountcontroller,
                           drwrclr: drwrclr,
                           wid: wid,
                           admincontroller: admincontroller);
@@ -1257,6 +1264,7 @@ class addsheet extends StatelessWidget {
     required this.wid1,
     required this.dtxtclr,
     required this.itemcontroller,
+    required this.amountcontroller,
     required this.drwrclr,
     required this.wid,
     required this.admincontroller,
@@ -1266,6 +1274,7 @@ class addsheet extends StatelessWidget {
   final double wid1;
   final Color dtxtclr;
   final TextEditingController itemcontroller;
+  final TextEditingController amountcontroller;
   final Color drwrclr;
   final double wid;
   final TextEditingController admincontroller;
@@ -1277,73 +1286,135 @@ class addsheet extends StatelessWidget {
       onTap: (() => Navigator.of(context).pop()),
       child: GestureDetector(
         onTap: () {},
-        child: DraggableScrollableSheet(
-          initialChildSize: bottomsheetsize,
-          minChildSize: 0.2,
-          builder: (_, controller) => Container(
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30))),
-            child: ListView(
-              controller: controller,
-              children: [
-                Container(
-                  height: 150,
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(0),
-                  decoration: const BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30))),
-                  child: Image.asset("images/logo.png"),
-                ),
-                SizedBox(
-                  width: wid1 * 0.9, //underline // WIDTH OF BOX
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          //controller: controller,
+          children: [
+            Container(
+              height: 150,
+              width: double.infinity,
+              padding: const EdgeInsets.all(0),
+              decoration: const BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30))),
+              child: Image.asset("images/logo.png"),
+            ),
+            SizedBox(
+              width: wid1 * 0.9, //underline // WIDTH OF BOX
 
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 5.0, bottom: 5, right: 5, top: 10),
-                    child: Text('Add an item',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.roboto(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: dtxtclr.withOpacity(0.9),
-                        )),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 5.0, bottom: 5, right: 5, top: 10),
+                child: Text('Add an item',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.roboto(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: dtxtclr.withOpacity(0.9),
+                    )),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Container(
+                // height: 150,
+                padding: const EdgeInsets.all(0),
+                child: Column(children: [
+                  ///
+                  ///
+                  ///
+                  ///
+                  ///
+                  Container(
+                    height: 55,
+                    child: TextField(
+                      cursorRadius: Radius.circular(50),
+                      onTap: (() {}),
+                      textAlignVertical: TextAlignVertical.bottom,
+                      style: GoogleFonts.roboto(
+                        color: dtxtclr,
+                        fontSize: 20,
+                      ),
+                      cursorColor: dtxtclr,
+
+                      // keyboardType: TextInputType.number,
+                      // inputFormatters: [
+                      //   FilteringTextInputFormatter.digitsOnly
+                      // ],
+                      textInputAction: TextInputAction.next,
+                      controller: itemcontroller,
+                      autofocus: true,
+                      // maxLength: 10,
+                      decoration: InputDecoration(
+                          counterText: '',
+                          counterStyle:
+                              TextStyle(color: dtxtclr.withOpacity(0.5)),
+                          //to hide "0/2" which came because of the 2 max length
+                          label: const Text(
+                            'Add item',
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          labelStyle: TextStyle(color: dtxtclr),
+                          // border: UnderlineInputBorder(borderSide: BorderSide(width: 2)),
+
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: dtxtclr)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: dtxtclr)),
+                          // fillColor: Colors.red,
+                          hintText: "Type device name",
+                          hintStyle: TextStyle(
+                              fontSize: 20, color: dtxtclr.withOpacity(0.5))),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Container(
-                    // height: 150,
-                    padding: const EdgeInsets.all(0),
-                    child: Column(children: [
-                      ///
-                      ///
-                      ///
-                      ///
-                      ///
-                      Container(
+
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        height: 65,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              elevation: 5,
+                              primary: dtxtclr,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(300)),
+                            ),
+                            onPressed: () {},
+                            child: Icon(
+                              Icons.horizontal_rule,
+                              color: drwrclr,
+                              size: wid / 15,
+                            )),
+                      ),
+                      SizedBox(
+                        width: wid1 * 0.57,
                         height: 55,
                         child: TextField(
                           cursorRadius: Radius.circular(50),
-                          onTap: (() {}),
+                          keyboardType: TextInputType.number,
                           textAlignVertical: TextAlignVertical.bottom,
-                          style: GoogleFonts.roboto(
+                          style: TextStyle(
                             color: dtxtclr,
                             fontSize: 20,
                           ),
                           cursorColor: dtxtclr,
-
                           // keyboardType: TextInputType.number,
                           // inputFormatters: [
                           //   FilteringTextInputFormatter.digitsOnly
                           // ],
                           textInputAction: TextInputAction.done,
-                          controller: itemcontroller,
+                          controller: amountcontroller,
                           autofocus: true,
                           // maxLength: 10,
                           decoration: InputDecoration(
@@ -1352,7 +1423,7 @@ class addsheet extends StatelessWidget {
                                   TextStyle(color: dtxtclr.withOpacity(0.5)),
                               //to hide "0/2" which came because of the 2 max length
                               label: const Text(
-                                'Add item',
+                                'Amount',
                                 style: TextStyle(
                                   fontSize: 20,
                                 ),
@@ -1369,214 +1440,141 @@ class addsheet extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20),
                                   borderSide: BorderSide(color: dtxtclr)),
                               // fillColor: Colors.red,
-                              hintText: "Type device name",
+                              hintText: "No. of devices",
                               hintStyle: TextStyle(
                                   fontSize: 20,
                                   color: dtxtclr.withOpacity(0.5))),
                         ),
                       ),
-
-                      const SizedBox(
-                        height: 10,
+                      SizedBox(
+                        height: 65,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              elevation: 5,
+                              primary: dtxtclr,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(300)),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Icon(
+                              Icons.add,
+                              color: drwrclr,
+                              size: wid / 15,
+                            )),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                            height: 65,
+                            height: 50,
+                            width: wid * 0.4,
                             child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
-                                  primary: dtxtclr,
+                                  onPrimary: Colors.grey,
+                                  primary: drwrclr,
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(300)),
+                                      borderRadius: BorderRadius.circular(50)),
+                                  side: BorderSide(color: dtxtclr, width: 1.5),
                                 ),
                                 onPressed: () {
+                                  // if (heptic) player.play('pluck.mp3');
                                   Navigator.of(context).pop();
+
+                                  if (itemcontroller.text.isNotEmpty &&
+                                      itemcontroller.text == "123") {
+                                    Fluttertoast.showToast(
+                                        msg: "you are now an ADMIN");
+                                  } else {
+                                    Fluttertoast.showToast(msg: "Wrong code");
+                                  }
+                                  // if (boss != 0) boss = 5;
+
+                                  // if (controllers.text.length == 1)
+                                  //   sec = '0' + controllers.text;
+
+                                  // mi = min;
+                                  // se = sec;
+
+                                  itemcontroller.clear();
+                                  amountcontroller.clear();
                                 },
-                                child: Icon(
-                                  Icons.horizontal_rule,
-                                  color: drwrclr,
-                                  size: wid / 15,
-                                )),
-                          ),
-                          SizedBox(
-                            width: wid1 * 0.57,
-                            height: 55,
-                            child: TextField(
-                              cursorRadius: Radius.circular(50),
-                              textAlignVertical: TextAlignVertical.bottom,
-                              style: TextStyle(
-                                color: dtxtclr,
-                                fontSize: 20,
-                              ),
-                              cursorColor: dtxtclr,
-                              // keyboardType: TextInputType.number,
-                              // inputFormatters: [
-                              //   FilteringTextInputFormatter.digitsOnly
-                              // ],
-                              textInputAction: TextInputAction.done,
-                              controller: itemcontroller,
-                              autofocus: true,
-                              // maxLength: 10,
-                              decoration: InputDecoration(
-                                  counterText: '',
-                                  counterStyle: TextStyle(
-                                      color: dtxtclr.withOpacity(0.5)),
-                                  //to hide "0/2" which came because of the 2 max length
-                                  label: const Text(
-                                    'Amount',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
-                                  labelStyle: TextStyle(color: dtxtclr),
-                                  // border: UnderlineInputBorder(borderSide: BorderSide(width: 2)),
-
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide(color: dtxtclr)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide(color: dtxtclr)),
-                                  // fillColor: Colors.red,
-                                  hintText: "No. of devices",
-                                  hintStyle: TextStyle(
-                                      fontSize: 20,
-                                      color: dtxtclr.withOpacity(0.5))),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 65,
-                            child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0,
-                                  primary: dtxtclr,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(300)),
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Icon(
-                                  Icons.add,
-                                  color: drwrclr,
-                                  size: wid / 15,
-                                )),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 50,
-                              width: wid * 0.4,
-                              child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    onPrimary: Colors.grey,
-                                    primary: drwrclr,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    side:
-                                        BorderSide(color: dtxtclr, width: 1.5),
-                                  ),
-                                  onPressed: () {
-                                    // if (heptic) player.play('pluck.mp3');
-                                    Navigator.of(context).pop();
-
-                                    if (itemcontroller.text.isNotEmpty &&
-                                        itemcontroller.text == "123") {
-                                      Fluttertoast.showToast(
-                                          msg: "you are now an ADMIN");
-                                    } else {
-                                      Fluttertoast.showToast(msg: "Wrong code");
-                                    }
-                                    // if (boss != 0) boss = 5;
-
-                                    // if (controllers.text.length == 1)
-                                    //   sec = '0' + controllers.text;
-
-                                    // mi = min;
-                                    // se = sec;
-
-                                    itemcontroller.clear();
-                                  },
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Text(
-                                            'OKAY',
-                                            style: TextStyle(
-                                                fontSize: wid / 20,
-                                                fontWeight: FontWeight.w600,
-                                                color: dtxtclr),
-                                          ),
-                                          Icon(
-                                            Icons.check_circle_outline_rounded,
-                                            color: dtxtclr,
-                                            size: wid / 15,
-                                          )
-                                        ]),
-                                  )),
-                            ),
-                            const Divider(
-                              indent: 30,
-                            ),
-                            SizedBox(
-                              height: 50,
-                              width: wid * 0.4,
-                              child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    primary: dtxtclr,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                  ),
-                                  onPressed: () {
-                                    admincontroller.clear();
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Text(
-                                            'CANCEL',
-                                            style: TextStyle(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text(
+                                          'OKAY',
+                                          style: TextStyle(
                                               fontSize: wid / 20,
                                               fontWeight: FontWeight.w600,
-                                              color: drwrclr,
-                                            ),
-                                          ),
-                                          Icon(
-                                            Icons.cancel_outlined,
+                                              color: dtxtclr),
+                                        ),
+                                        Icon(
+                                          Icons.check_circle_outline_rounded,
+                                          color: dtxtclr,
+                                          size: wid / 15,
+                                        )
+                                      ]),
+                                )),
+                          ),
+                          const Divider(
+                            indent: 30,
+                          ),
+                          SizedBox(
+                            height: 50,
+                            width: wid * 0.4,
+                            child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  primary: dtxtclr,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50)),
+                                ),
+                                onPressed: () {
+                                  admincontroller.clear();
+                                  Navigator.of(context).pop();
+                                },
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text(
+                                          'CANCEL',
+                                          style: TextStyle(
+                                            fontSize: wid / 20,
+                                            fontWeight: FontWeight.w600,
                                             color: drwrclr,
-                                            size: wid / 15,
-                                          )
-                                        ]),
-                                  )),
-                            ),
-                          ])
-                    ]),
-                  ),
-                ),
-              ],
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.cancel_outlined,
+                                          color: drwrclr,
+                                          size: wid / 15,
+                                        )
+                                      ]),
+                                )),
+                          ),
+                        ]),
+                  )
+                ]),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
