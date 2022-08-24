@@ -36,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Color dtxtclr = Colors.black;
   var toprighticon = Icons.logout;
   String heading = "INVENTORY";
+  String usrname = '';
+  String usremail = '';
   var derkicon = Icons.brightness_3_outlined;
   late TextEditingController admincontroller;
   late TextEditingController itemcontroller;
@@ -52,7 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
         .doc(user!.uid)
         .get()
         .then((value) {
-      this.loggedInUser = UserModel.fromMap(value.data());
+      //this.loggedInUser = UserModel.fromMap(value.data());
+      loggedInUser = UserModel.fromMap(value.data());
       setState(() {});
     });
     admincontroller = TextEditingController();
@@ -95,6 +98,14 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         heading = "PENDING";
       });
+    }
+
+    if (usrname.isEmpty) {
+      usrname = "${loggedInUser.firstName} ${loggedInUser.secondName}";
+    }
+
+    if (usremail.isEmpty) {
+      usremail = "${loggedInUser.email}";
     }
 
     Future<void> logout(BuildContext context) async {
@@ -1327,7 +1338,7 @@ class addsheet extends StatelessWidget {
                   ///
                   ///
                   ///
-                  Container(
+                  SizedBox(
                     height: 55,
                     child: TextField(
                       cursorRadius: Radius.circular(50),
@@ -1345,7 +1356,7 @@ class addsheet extends StatelessWidget {
                       // ],
                       textInputAction: TextInputAction.next,
                       controller: itemcontroller,
-                      autofocus: true,
+                      autofocus: false,
                       // maxLength: 10,
                       decoration: InputDecoration(
                           counterText: '',
@@ -1390,7 +1401,16 @@ class addsheet extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(300)),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              if (amountcontroller.text.isEmpty) {
+                                amountcontroller.text = "0";
+                              } else if (int.parse(amountcontroller.text) !=
+                                  0) {
+                                amountcontroller.text =
+                                    ((int.parse(amountcontroller.text)) - 1)
+                                        .toString();
+                              }
+                            },
                             child: Icon(
                               Icons.horizontal_rule,
                               color: drwrclr,
@@ -1415,7 +1435,7 @@ class addsheet extends StatelessWidget {
                           // ],
                           textInputAction: TextInputAction.done,
                           controller: amountcontroller,
-                          autofocus: true,
+                          autofocus: false,
                           // maxLength: 10,
                           decoration: InputDecoration(
                               counterText: '',
@@ -1456,7 +1476,13 @@ class addsheet extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(300)),
                             ),
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              if (amountcontroller.text.isEmpty) {
+                                amountcontroller.text = "1";
+                              } else {
+                                amountcontroller.text =
+                                    ((int.parse(amountcontroller.text)) + 1)
+                                        .toString();
+                              }
                             },
                             child: Icon(
                               Icons.add,

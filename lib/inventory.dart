@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
 
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ims/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +15,31 @@ class Inventory extends StatefulWidget {
 class _InventoryState extends State<Inventory> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
+  final Stream<QuerySnapshot> hardwareStream =
+      FirebaseFirestore.instance.collection('hardware').snapshots();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   bool admincheck = false;
   Color drwrclr = Colors.white;
   Color dtxtclr = Colors.black;
+  String adreq = "Request";
 
   // late TextEditingController admincontroller;
   String code = "";
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      //this.loggedInUser = UserModel.fromMap(value.data());
+      loggedInUser = UserModel.fromMap(value.data());
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,83 +61,106 @@ class _InventoryState extends State<Inventory> {
     ///
     ///
     ///
-    return Scaffold(
-      //drawer: menu,
-
-      ///
-      ///
-      ///
-      ///
-      ///
-      ///
-      ///
-      ///
-      ///
-
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Item(itemname: "Arduino", n: 10),
-            const Div(),
-            Item(itemname: "Esp32", n: 20),
-            Div(),
-            Item(itemname: "RubberDucky", n: 2),
-            Div(),
-            Item(itemname: "BashBunny", n: 3),
-            Div(),
-            Item(itemname: "Proxmark", n: 2),
-            Div(),
-            Item(itemname: "Wifi pineapple", n: 3),
-            Div(),
-            Item(itemname: "HackRF", n: 5),
-            Div(),
-            Item(itemname: "SDR", n: 6),
-            Div(),
-            Item(itemname: "USB TTL", n: 12),
-            Div(),
-            Item(itemname: "Rasberry Pi", n: 3),
-            Div(),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
+    ///
+    return StreamBuilder(
+        stream: hardwareStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            print("SomethingWent Wrong");
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              body: Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 150,
-                      child:
-                          Image.asset("images/logo.png", fit: BoxFit.contain),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Colors.black,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text("Loading Database. Please wait...")
+                    ]),
+              ),
+            );
+          }
+          final List storedocs = [];
+          snapshot.data!.docs.map((DocumentSnapshot document) {
+            Map a = document.data() as Map<String, dynamic>;
+            storedocs.add(a);
+            print(storedocs);
+          }).toList();
+
+          return Scaffold(
+            //drawer: menu,
+
+            ///
+            ///
+            ///
+            ///
+            ///
+            ///
+            ///
+            ///
+            ///
+
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  for (var i = 0; i < storedocs.length; i++) ...[
+                    Item(
+                      itemname: "Arduino",
+                      n: 10,
+                      adreq: adreq,
+                      admincheck: admincheck,
                     ),
-                    const Text(
-                      "bi0s inventory",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text("${loggedInUser.firstName} ${loggedInUser.secondName}",
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w500,
-                        )),
-                    Text("${loggedInUser.email}",
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w500,
-                        )),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const Div(),
                   ],
-                ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 150,
+                            child: Image.asset("images/logo.png",
+                                fit: BoxFit.contain),
+                          ),
+                          const Text(
+                            "bi0s inventory",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                              "${loggedInUser.firstName} ${loggedInUser.secondName}",
+                              style: const TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              )),
+                          Text("${loggedInUser.email}",
+                              style: const TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w500,
+                              )),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
   // the logout function
@@ -127,17 +168,26 @@ class _InventoryState extends State<Inventory> {
 }
 
 class Item extends StatelessWidget {
-  const Item({
+  Item({
     Key? key,
     required this.itemname,
     required this.n,
+    required this.adreq,
+    required this.admincheck,
   }) : super(key: key);
 
   final String itemname;
   final int n;
+  final bool admincheck;
+  String adreq;
 
   @override
   Widget build(BuildContext context) {
+    if (admincheck == true) {
+      adreq = "Add";
+    } else {
+      adreq = "Request";
+    }
     return ListTile(
       // tileColor: Colors.red,
       title: Text(
@@ -153,8 +203,8 @@ class Item extends StatelessWidget {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           ),
-          child: const Text(
-            "Request",
+          child: Text(
+            adreq,
             style: TextStyle(color: Colors.white),
           )),
     );
